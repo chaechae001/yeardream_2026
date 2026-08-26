@@ -25,3 +25,6 @@ git remote add origin https://github.com/chaechae001/yeardream_2026.git
 # 기본 브랜치 이름 변경 (main이라고 이름 잡아줌)
 git branch -M main
 
+# push
+git push -u origin main
+
