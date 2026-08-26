@@ -10,3 +10,11 @@ git add .
 
 # 상태 확인
 git status
+
+# commit 하기
+git commit -m "first commit"
+
+# commit의 상태 확인
+git log --graph --oneline --all
+
+
