@@ -30,6 +30,15 @@ describe('사칙연산 UI 테스트', function(){
     test('더하기 테스트', async function(){
         await calcTestUI('10', '20', '+', '답 : 30');
     });
+    test('빼기 테스트', async function(){
+        await calcTestUI('20', '10', '-', '답 : 10');
+    });
+    test('곱하기 테스트', async function(){
+        await calcTestUI('10', '20', '*', '답 : 200');
+    });
+    test('나누기 테스트', async function(){
+        await calcTestUI('20', '2', '/', '답 : 10');
+    });
 });
 
 /*
