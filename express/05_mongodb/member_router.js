@@ -56,10 +56,37 @@ router.get(['/get/:id'], async (req, res)=>{
 });
 
 // ===== 회원정보 수정 (/member/update/:id) =====
-router.put(['/update/:id'], function(req, res){
+router.put(['/update/:id'], async (req, res)=>{
     const {id} = req.params;
-    const param = req.body;
-    res.json({'success':true, 'data': {'id': id, 'msg': param}});
+    const {pw, name, phone, grade} = req.body;  // id 빼고 수정 가능
+    let update = {};    // const는 배열이나 오브젝트 일부 수정은 허용
+
+    // if (pw != undefined) update['pw'] = pw; (줄여서도 가능)
+    if (pw !== undefined){
+        update['pw'] = pw;
+    }
+    if (name !== undefined){
+        update['name'] = name;
+    }
+    if (phone !== undefined){
+        update['phone'] = phone;
+    }
+    if (grade !== undefined){
+        update['grade'] = grade;
+    }
+
+    const member = await Member.findOneAndUpdate({id}, update,
+        {
+            new: true,  // 수정된 후의 문서를 보여준다.
+            runValidators: true,    // update 후 스키마 검증 진행
+        }).lean();
+
+    if (member == null) {
+        res.json({'success': false, 'msg' : '없는 회원'});
+    }
+    res.json({'success': true, 'msg' : '수정에 성공했습니다.', data:member});
+
+    // res.json({'success':true, 'data': {'id': id, 'msg': param}});
 });
 
 // ===== 회원정보 삭제 (/member/delete/:id) =====
