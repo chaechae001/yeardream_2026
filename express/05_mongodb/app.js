@@ -10,6 +10,7 @@ const connectDB = require('./db');
 // 그래서 특정 IP에 대해서 허용해 주는 기능
 app.use(cors());
 app.use(express.json());  // BODY로 보내는 JSON 형태로 받기
+app.use('/member', require('./member_router')); // ROUTER (변수에 담아서 넣을 수도 있음)
 
 // DB 접속 먼저
 connectDB();
