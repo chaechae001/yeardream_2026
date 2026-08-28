@@ -2,7 +2,7 @@ const mongo = require("mongoose");
 
 function connectDB(){
     mongo.set('debug', true);  // 실행되는 쿼리를 로그에 출력 (개발용)
-    const url= "mongodb://localhost:27017/yeardram";
+    const url= "mongodb://localhost:27017/yeardream";
     mongo.connect(url);
     const db = mongo.connection;
 
