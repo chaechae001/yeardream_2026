@@ -46,4 +46,20 @@ print(inputs['input_ids'][0])
 tokens = tokenizer.convert_ids_to_tokens(inputs['input_ids'][0])
 print(tokens)
 
-# 토큰별로 768차원의 벡터를 가져와보기 (앞 3차원만..)
+# 토큰별로 768차원의 벡터를 가져와보기 (앞 3차원만...)
+for idx, token in enumerate(tokens):
+    # [0] : 문장 1개
+    # [idx] : 토큰 13개 idx로 0번부터 다 가져오기
+    # [:3] : 768개를 다 불러 올 수 없으니 3개만 가져오기
+    # lhs[0][idx][:3] == lhs[0, idx, :3]
+    # tensor 값 가져오는 방법 2가지
+    # 1. 1개일 경우 .item
+    # 2. 2개 이상일 경우 .tolist()로 가져오기
+    vect = lhs[0][idx][:3].tolist()
+    print(f'{idx}:{token} -> vector : {vect}...')
+
+    # 768 개의 배열에는 무엇이 들어있는가?
+    # 768개 : 단어를 구분할 수 있는 기준 조건 (Feature)
+    # 단일 단어 뿐 아니라 인근의 단어들과의 관계도 포함이 된다.
+
+# last_hidden_state는 문장 안의 모든 각 단어의 의미를 담은 벡터를 확인할 때 사용
