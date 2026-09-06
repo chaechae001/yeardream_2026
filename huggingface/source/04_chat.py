@@ -82,5 +82,3 @@ print(resp_text)
 
 
 
-
-
