@@ -7,7 +7,7 @@ model = AutoModelForSequenceClassification.from_pretrained(model_id)
 
 # 2. hugging face 에 PUSH
 # 토큰의 권한이 write 여야 한다.
-repo_id = 'jihookuku/test_upload_model'
+repo_id = 'chaeeun01/test_upload_model'
 print('model 과 토크나이저 업로드 중...')
 tokenizer.push_to_hub(repo_id)
 model.push_to_hub(repo_id)
