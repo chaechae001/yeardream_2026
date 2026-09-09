@@ -65,7 +65,7 @@ def upload(files: List[UploadFile]):    # 다중파일 수신 - 클라이언트�
             logger.info(f'{name} / {ext}')
             # 2. 파일명 변경 (UUID - 중복이름 방지)
             # 중복 이름 방지를 위해 유일한 무작위 문자열 생성하고 기존 확장자(ext)를 붙여 새로운 파일 이름으로 만듬
-            new_filename = f'{uuid.uuid4()}.{ext}'
+            new_filename = f'{uuid.uuid4()}{ext}'
             # 3. 새로운파일명 + 확장자
             logger.info(f'new file name = {new_filename}')
             # 4. 파일 저장
@@ -83,3 +83,25 @@ def upload(files: List[UploadFile]):    # 다중파일 수신 - 클라이언트�
         logger.error(traceback.format_exc())    # 상세 에러로그 보기
 
     return {"msg": msg}
+
+@app.get("/files")
+def files():
+    # 특정 경로의 파일 리스트를 가져옴
+    file_list = os.listdir(FILE_PATH)
+    logger.info(file_list)
+    return {"files":file_list}
+
+@app.get("/delete")
+def delete(filename:str):
+    path = f'{FILE_PATH}/{filename}'
+    if os.path.exists(path):
+        os.remove(path)
+    return RedirectResponse("/view/file_list.html")
+
+@app.get("/download")
+def download(filename:str):
+    path = f'{FILE_PATH}/{filename}'
+    if os.path.exists(path):
+        return RedirectResponse(path, media_type="application/octet-stream", filename=filename)
+    else:
+        return {"msg":"해당 파일이 없습니다."}
