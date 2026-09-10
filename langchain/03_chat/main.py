@@ -1,36 +1,33 @@
-from langchain_core.messages import HumanMessage, AIMessage
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_ollama import ChatOllama
+from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
+from starlette.responses import RedirectResponse
+from starlette.staticfiles import StaticFiles
 
-# 모델 호출
-model = ChatOllama(model = "exaone3.5:2.4b")
+import chat_router
 
-# 대화 저장 리스트
-conversation_history = []
+app = FastAPI()
 
-# 프롬프트 작성
-prompt = ChatPromptTemplate.from_messages([
-    ("system", "당신은 답변 전문 AI 모델입니다. 주워진 질문에 대해서 핵심만 간단히 대답하세요."),
-    MessagesPlaceholder(variable_name="history"),   # 대화내용을 history라는 이름으로 줄게. 참고해서 대답해봐
-    ("user", "{query}")
-])
+# 1. CORS(Cross-Origin Resource Sharing) 설정
+# ["*"]: 모든 도메인에서의 접근 허용
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"])
 
-# 파이프라인 조립
-chain = prompt | model
+# 2. 정적 파일 마운트
+# 브라우저에서 '/view' 경로로 접속하면, 서버의 'view'폴더 내의 파일들(chat.html 등)을 제공
+app.mount("/view", StaticFiles(directory="view"))
 
-# 실행 및 출력
-while True:
-    query = input('\n 당산')
+# 3. 라우터 연결
+# chat_router.py에 정의된 API 엔드포인트들을 FastAPI 앱에 포함시킴
+app.include_router(chat_router.router)
 
-    if query == '/exit' or query == '/bye':
-        print('대화를 종료합니다.')
-        break
-    answer = ''
-    for chunk in chain.stream({'query': query, 'history': conversation_history}):
-        print(chunk.content, end="", flush=True) # StrOutputParser() 안써서 .content 붙임
-        answer += chunk.content
+# 4. 루트 도메인('/') 접속 시 리다이렉트
+@app.get("/")
+def main():
+    return RedirectResponse("/view/chat.html")
 
-    conversation_history.append(HumanMessage(content=query))
-    conversation_history.append(AIMessage(content=answer))
-    print()
-    print(f'\n [history length] : {len(conversation_history)}')
+"""
+@app.post("/ask/chat")
+def ask_chat(info:Dict[str, str]):
+    print(f'input : {info['q']})
+    
+    return StreamingResponse(chat_answer(info['q']), media_type="text/plain")
+"""
