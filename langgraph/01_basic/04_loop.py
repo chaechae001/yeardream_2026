@@ -3,7 +3,7 @@ from langchain_ollama import ChatOllama
 from pydantic import BaseModel
 from langgraph.constants import END
 from langgraph.graph import StateGraph
-
+import json
 
 class WriteState(BaseModel):
     topic:str=''    # 글의 주제
@@ -64,11 +64,22 @@ def critic_node(state:WriteState) -> WriteState:
         """
     resp = llm.invoke(prompt)
     print(resp.content)    # JSON 형태만 깔끔하게 잘 나오는가?
+    result = json.loads(resp.content.strip()) # 정식 JSON 객체 생성 (dict와 같은 형태)
+    state.state = result['state']
+    state.feedback = result['feedback']
     return state
 
 def route_by_review(state:WriteState) -> str:
     """PASS / RETRY에 따라서 다른 노드로 갈 수 있는 문자열 반환"""
-    return "go_retry"
+    if state.state == 'PASS':
+        print('검증 통과')
+        return "go_end"
+    elif state.count >=3:
+        print('3회 초과로 재시도 중지')
+        return "go_end"
+    else:
+        print(f'{state.count} 회 시도 \n 피드백: {state.feedback}')
+        return "go_retry"
 
 # 4. 저장소 등록
 wf = StateGraph(WriteState)
@@ -80,11 +91,21 @@ wf.add_node("critic", critic_node)
 # 6. 엣지 등록 (조립)
 wf.set_entry_point('writer')
 wf.add_edge("writer", 'critic')
-wf.add_edge("critic", END)
+wf.add_conditional_edges(
+    "critic",
+    route_by_review,
+    {
+         'go_end': END,
+         'go_retry': 'writer',
+    })
 
 # 7. 컴파일
 app = wf.compile()
 
 # 8. 실행
-result = app.invoke({"topic": "전기자동차"})
-print(result)
+# result = app.invoke({"topic": "전기자동차"})
+# print(result)
+
+for node in app.stream({'topic':'전기 자동차'},stream_mode="updates"):
+    for key,val in node.items():
+        print(f'{key}:{val}')
