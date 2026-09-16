@@ -1,9 +1,10 @@
 # 1. 저장소 생성
+import json
+
 from langchain_ollama import ChatOllama
-from pydantic import BaseModel
 from langgraph.constants import END
 from langgraph.graph import StateGraph
-import json
+from pydantic import BaseModel
 
 class WriteState(BaseModel):
     topic:str=''    # 글의 주제
@@ -55,16 +56,16 @@ def critic_node(state:WriteState) -> WriteState:
             2. 미래 지향적인 내용이어야 함
 
             [출력조건]
-            다른 설명 필요없이 아래 형태의 JSON 포맷으로 응답해야함
-            ``` 등의 JSON에 필요한 문자는 모두 제외
+            다른설명 필요 없이 아래 형태의 JSON 포맷으로 응답해야함
+            ``` 나 ```json 등의 json 이나 코드를 표기하는 문자는 제외
             {{
-            "state": "오직 PASS 또는 RETRY만 표기",
-            "feedback": "state가 RETRY일 경우 조건을 만족하지 못하는 이유, PASS 일 경우 칭찬"
+            "state":"오직 PASS 또는 RETRY 만 표기",
+            "feedback":"state 가 RETRY 일 경우 조건을 만족하지 못하는 이유, PASS 일 경우 칭찬"
             }}
         """
     resp = llm.invoke(prompt)
-    print(resp.content)    # JSON 형태만 깔끔하게 잘 나오는가?
-    result = json.loads(resp.content.strip()) # 정식 JSON 객체 생성 (dict와 같은 형태)
+    print(resp.content)  # JSON 형태만 깔끔하게 잘 나오는가?
+    result = json.loads(resp.content.strip())  # 정식 JSON 객체 생성(dict 와 같은 형태)
     state.state = result['state']
     state.feedback = result['feedback']
     return state
@@ -92,11 +93,11 @@ wf.add_node("critic", critic_node)
 wf.set_entry_point('writer')
 wf.add_edge("writer", 'critic')
 wf.add_conditional_edges(
-    "critic",
+    'critic',
     route_by_review,
     {
-         'go_end': END,
-         'go_retry': 'writer',
+        'go_end':END,
+        "go_retry":'writer'
     })
 
 # 7. 컴파일
