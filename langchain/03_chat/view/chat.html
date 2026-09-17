@@ -63,42 +63,34 @@
     async function askAI() {
         const inputBox = document.getElementById('input-box');
         chatBox.innerHTML = "생성 중...";
-        let fullResponse = "";  // 함수 내부에서 선언해야 매 요청마다 초기화
+        fullResponse = "";
         // 브라우저 Axios는 fetch의 ReadableStream을 활용해야 실시간 처리가 가능합니다.
 
-        // 1. Axios 통신 시작
         const {data} = await axios({
             method: 'post',
             url:'/ask/chat',
-            data: {q:inputBox.value},  // 서버의 info['q']와 매칭됨
+            data: {q:inputBox.value},
             responseType: 'stream', // 스트림 타입 설정
             adapter: 'fetch' // 브라우저 환경에서 fetch 어댑터 강제 사용 (중요!)
-            // fetch API를 사용하여 스트림 청크를 다룰 수 있게 함
         });
-
-        // 2. 스트림 리더 및 디코더 준비
         const reader = data.getReader(); // 이래야 실시간으로 하나씩 받을 수 있음
         const decoder = new TextDecoder(); // 스트림은 바이너리로 오기 때문에 텍스트로의 변환이 필수
 
-				// 3. 데이터 조각(Chunk) 무한 읽기 루
         while (true) {
             const { done, value } = await reader.read();
             if (done){
-                break;  // 서버에서 응답이 끝나면(done === true) 루프 탈출
+                break;
             }
 
-						// 바이너리 데이터(value)를 텍스트로 변환
             const chunk = decoder.decode(value, {stream:true});
-            fullResponse += chunk;  // 전체 답변에 이어붙임
+            fullResponse += chunk;
 
-            // 4. 실시간으로 화면 마크다운 렌더링 (볼드체 등 처리)
-            // 마크다운 파서로 HTML 태그로 변환 후 화면 갱신
+            // 4. 실시간으로 마크다운 렌더링 (볼드체 등 처리)
             // md.render()가 문장 속의 **볼드**를 <strong>태그로 바꿔줍니다.
             chatBox.innerHTML = md.render(fullResponse);
-            // 스크롤을 항상 가장 아래로 유지
             chatBox.scrollTop = chatBox.scrollHeight;
         }
-				// 질문이 끝난 후 입력창 초기화
+
         inputBox.value = "";
     }
 
