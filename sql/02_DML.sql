@@ -14,8 +14,13 @@ SHOW VARIABLES LIKE 'character_set%'
 
 -- 캐릭터셋이 바뀌기 전에 만들어져버린 database 와 table 에 대해서 변경
 ALTER DATABASE mydb CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+
 ALTER TABLE employees CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
+
+SHOW databases;
+
+desc employees;
 
 USE mydb;
 -- INSERT
