@@ -25,22 +25,21 @@ CREATE TABLE [테이블명] (
 	...
 );
  */
-/*1) 문자타입 
- * 고정형 CHAR(바이트) 
+/*1) 문자타입
+ * 고정형 CHAR(바이트)
  * 가변경 VARCHAR(바이트) -> 바이트 크기만큼 자리잡았다가 데이터가 작으면 줄어든다.
  * TEXT: 65MB
  * LONGTEXT 4GB
  * */
-/*2) 숫자타입 
+/*2) 숫자타입
  * INT, FLOAT, BIGINT, DOUBLE
  * */
 /*3) BOOLEAN -> 0/1 */
-/*4) 날짜타입 
+/*4) 날짜타입
  * DATE			: 0000-00-00
  * DATETIME		: 0000-00-00 00:00:00.000
  * TIMESTAMP	: DATETIME과 같지만 time-zone에 따라 시간이 변경된다.
  * */
-
 
 CREATE TABLE test_table(
 	user_name VARCHAR(40),
