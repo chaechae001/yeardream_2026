@@ -1,0 +1,9 @@
+# uv pip install -r requirements.txt
+uvicorn
+fastapi
+pymysql
+sqlalchemy
+
+# 암호화
+bcrypt
+pyjwt
