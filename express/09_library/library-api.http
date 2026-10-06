@@ -1,0 +1,131 @@
+@baseUrl = http://localhost:4000
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWQyZmQzMWZlNTNmYjViM2VjZjk1YSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc4ODY4OTAwNSwiZXhwIjoxNzg4NjkyNjA1fQ.rVptHuAGCinmeI5xw8rgHj6XtG5mi8VSb6PFkkII_YE
+@userToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhOWQwMGI1Y2FmNDk5YjdkMTY0Y2EwZiIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzg4Njg5NzA4LCJleHAiOjE3ODg2OTMzMDh9.onlEyZbhAxDeQ45OPx0JErkeYTpZ7LZhSfUiedpiuiA
+@userId = 6a9d00b5caf499b7d164ca0f
+# 테스트할 ISBN
+@testIsbn = 9788966260959
+
+
+### 서버 연결 테스트
+GET http://localhost:4000/
+
+### 1. 회원가입 (user)
+POST http://localhost:4000/api/auth/register
+Content-type: application/json
+
+{
+  "email": "user@test.com",
+  "password": "1234",
+  "name": "홍길동"
+}
+
+### 1. 회원가입 (admin)
+POST http://localhost:4000/api/auth/register
+Content-type: application/json
+
+{
+  "email": "admin@test.com",
+  "password": "1234",
+  "name": "관리자"
+}
+
+
+### ==========================================
+### 2. 일반 사용자 로그인
+### ==========================================
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@test.com",
+  "password": "1234"
+}
+
+### ==========================================
+### 2. 관리자 로그인
+### ==========================================
+POST http://localhost:4000/api/auth/login
+Content-type: application/json
+
+{
+  "email": "admin@test.com",
+  "password": "1234"
+}
+
+### 전체 도서 조회
+GET http://localhost:4000/api/books
+
+### ============================================================
+### 1. 도서 입고
+### ADMIN만 가능
+### ============================================================
+POST {{baseUrl}}/api/books
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "title": "클린 코드 (Clean Code)",
+  "author": "로버트 C. 마틴",
+  "isbn": "{{testIsbn}}",
+  "category": "개발"
+}
+
+### ============================================================
+### 2. 입고된 도서 상세 조회
+### GET /api/books/:isbn
+### ============================================================
+GET {{baseUrl}}/api/books/{{testIsbn}}
+
+### ============================================================
+### 3. 도서 대출
+### PUT /api/books/:isbn
+### ADMIN만 가능
+### ============================================================
+PUT {{baseUrl}}/api/books/{{testIsbn}}
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "status": "LENT",
+  "borrowedBy": "{{userId}}"
+}
+
+### ============================================================
+### 4. 대출 상태 및 대출자 확인
+### GET /api/books/:isbn
+### ============================================================
+GET {{baseUrl}}/api/books/{{testIsbn}}
+
+### ============================================================
+### 5. 도서 반납
+### ADMIN만 가능
+### status를 AVAILABLE로 변경하면
+### borrowedBy는 서버에서 null로 변경
+### ============================================================
+PUT {{baseUrl}}/api/books/{{testIsbn}}
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "status": "AVAILABLE"
+}
+
+### ============================================================
+### 6. 반납 상태 확인
+### GET /api/books/:isbn
+### ============================================================
+GET {{baseUrl}}/api/books/{{testIsbn}}
+
+### ============================================================
+### 7. 도서 폐기
+### DELETE /api/books/:isbn
+### ADMIN만 가능
+### ============================================================
+DELETE {{baseUrl}}/api/books/{{testIsbn}}
+Authorization: Bearer {{adminToken}}
+
+### ============================================================
+### 8. 폐기 확인
+### GET /api/books/:isbn
+### ============================================================
+GET {{baseUrl}}/api/books/{{testIsbn}}

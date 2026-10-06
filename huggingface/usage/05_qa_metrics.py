@@ -1,0 +1,25 @@
+import evaluate
+
+qa_metrics = evaluate.load('squad')
+
+# 예측값
+predictions = [
+    {"id": "1", "prediction_text": "Albert Einstein"},
+    {"id": "2", "prediction_text": "Tokyo"},
+]
+
+# 정답
+references = [
+    {"id":"1", "answers":{
+        "text":["Albert Einstein"],
+        "answer_start":[0]  # 정답의 시작점
+    }},
+    {"id":"2", "answers":{
+        "text":["Tokyo Japan", "Tokyo city"],
+        "answer_start":[0, 0]  # 정답의 시작점
+    }}
+]
+
+result = qa_metrics.compute(predictions=predictions, references=references)
+print(result)
+# {'exact_match': 50.0, 'f1': 83.33333333333333}

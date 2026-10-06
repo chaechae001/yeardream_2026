@@ -1,0 +1,62 @@
+### 1. 회원 등록
+POST http://localhost/member/join
+Content-Type: application/json
+
+{
+  "id" : "user",
+  "pw" : "user@pass",
+  "name" : "일반유저",
+  "phone" : "010-1234-1234",
+}
+
+### 1. 회원 등록 2
+POST http://localhost/member/join
+Content-Type: application/json
+
+{
+  "id" : "admin",
+  "pw" : "admin@pass",
+  "name" : "관리자",
+  "phone" : "010-1234-1234",
+  "grade" : "admin"
+}
+
+### 1. 회원 등록 3
+POST http://localhost/member/join
+Content-Type: application/json
+
+{
+  "id" : "yeardream1234",
+  "pw" : "year@dream",
+  "name" : "정채은",
+  "phone" : "010-1234-5678"
+}
+
+### 1. 회원 등록 4
+POST http://localhost/member/join
+Content-Type: application/json
+
+{
+  "id" : "manager",
+  "pw" : "manager@pass",
+  "name" : "김지훈",
+  "phone" : "010-1234-5678"
+}
+
+### 2. 회원 목록
+GET http://localhost/member/list
+
+### 3. 회원  상세보기
+GET http://localhost/member/get/admin
+
+### 4. 회원 수정
+PUT http://localhost/member/update/admin
+Content-Type: application/json
+
+{
+  "name" : "관리자 (수정된 이름)",
+  "grade" : "admin"
+}
+
+### 5. 회원 삭제
+DELETE http://localhost/member/delete/manager
